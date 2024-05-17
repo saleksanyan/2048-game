@@ -1,5 +1,8 @@
+// const User = require('./User');
+
+
 class Board {
-    
+   
     constructor() {
         this.randomNums = [2,4];
         this.emptySpaceCount = 16;
@@ -13,12 +16,29 @@ class Board {
         this.placingNumInRandomPlaceOnBoard(1);
     }
 
+
+
+
+    getEmptySpaceCount(){
+        return this.emptySpaceCount;
+    }
+
+    
+    getBoard(){
+        return this.matrix;
+    }
+
+    setBoard(board){
+        return board;
+    }
+
+
     toString() {
         return this.matrix;
     }
 
 
-    down(){
+    down(user){
         let board = this.matrix;
         let changedPositions = false;
         let addedRowsAndColumns = new Map();
@@ -33,7 +53,7 @@ class Board {
                         changedPositions = true;
                     }else if(board[row+1][column] === board[row][column] && (addedRowsAndColumns.get(column) !== row) 
                         && addedRowsAndColumns.get(column) !== (row-1)){
-                        this.calculations(board, row, column, row+1, column);
+                        this.calculations(board, row, column, row+1, column, user);
                         addedRowsAndColumns.set(column, row+1);
                     }
                 }
@@ -48,7 +68,7 @@ class Board {
     }
 
 
-    up(){
+    up(user){
         let board = this.matrix;
         let changedPositions = false;
         let addedRowsAndColumns = new Map();
@@ -63,7 +83,7 @@ class Board {
                         changedPositions = true;
                     }else if(board[row-1][column] === board[row][column] && (addedRowsAndColumns.get(column) !== row) 
                         && (addedRowsAndColumns.get(column) !== row)){
-                        this.calculations(board, row, column, row-1, column);
+                        this.calculations(board, row, column, row-1, column, user);
                         addedRowsAndColumns.set(column, row-1);
                     }
                 }
@@ -77,7 +97,7 @@ class Board {
     }
 
 
-    left(){
+    left(user){
         let board = this.matrix;
         let changedPositions = false;
         for(let row = 0; row<board.length; row++){
@@ -91,7 +111,7 @@ class Board {
                         }
                         changedPositions = true;
                     }else if(board[row][column-1] === board[row][column] && (!addedColumns.includes(column))){
-                        this.calculations(board, row, column, row, column-1);
+                        this.calculations(board, row, column, row, column-1, user);
                         addedColumns.push(column);
                     }
                 }
@@ -112,7 +132,7 @@ class Board {
         board[row][column] = ' ';
     }
 
-    right(){
+    right(user){
         let board = this.matrix;
         let changedPositions = false;
         for(let row = 0; row<board.length; row++){
@@ -126,7 +146,7 @@ class Board {
                         this.swap(board, row, row, column+1, column);
                         changedPositions = true;
                     }else if(board[row][column+1] === board[row][column] && (!addedColumns.includes(column))){
-                        this.calculations(board, row, column, row, column+1);
+                        this.calculations(board, row, column, row, column+1, user);
                         addedColumns.push(column);
                     }
                 }
@@ -142,9 +162,23 @@ class Board {
 
 
 
-    calculations(board, row, column, changableRow, changableColumn) {
+    calculations(board, row, column, changableRow, changableColumn, user) {
+        let incrementedNum = board[row][column]
         board[changableRow][changableColumn] = String(parseInt(board[changableRow][changableColumn]) + parseInt(board[row][column]));
         board[row][column] = ' ';
+        switch(incrementedNum){
+            case '2':
+                user.incrementScore(2);
+                break;
+            case '4':
+                user.incrementScore(4);
+                break;
+            case '8':
+                user.incrementScore(8);
+                break;
+            default:
+                user.incrementScore(10);
+        }
     }
     
 
@@ -197,50 +231,6 @@ class Board {
         }
         return false;
     }
-
-    print(){
-
-        for (let row = 0; row < this.matrix.length; row++) {
-            for (let column = 0; column < this.matrix.length; column++) {
-                console.log(`${i} | ${this.matrix[row][column]} | `)
-            }
-            
-        }
-
-    }
-
-
 }
 
-module.exports = Board;
-
-
-
-
-let board = new Board();
-
-// // board.matrix.forEach(element => {
-// //     console.log(element);
-// // });
-
-
-board.matrix = [
-    ['4','2','2','2'],
-    ['8','8','4','8'],
-    ['2','1',' ','4'],
-    ['1','1','1','4']
-];
-
-// board.matrix.forEach(element => {
-//     console.log(element);
-// });
-// console.log('\n')
- debugger;
-//  board.up();
-board.placingNumInRandomPlaceOnBoard();
-
-console.log(board.checkWinCase());
-board.matrix.forEach(element => {
-    console.log(element);
-});
-
+export default Board;

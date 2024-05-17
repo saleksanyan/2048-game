@@ -1,5 +1,7 @@
-const Board = require('./Board');
-const reader = require('readline-sync');
+import Board from './Board.js';
+import User from './User.js';
+
+import { question } from 'readline-sync';
 // const prompt = require('prompt-sync')();
 
 
@@ -8,21 +10,24 @@ let play = function(){
     let board = new Board();
     let userChoice = '';
     let wantsToExit = false;
-    while((board.emptySpaceCount>0) && (!board.checkWinCase())){
-        console.log(board.matrix);
-        userChoice = reader.question("Please enter L(left), R(right), U(up), D(down), E(exit): ");
+    let userName = question("Hi there! What's your name? ");
+    let user = new User(userName);
+    
+    while((board.getEmptySpaceCount() > 0) && (!board.checkWinCase())){
+        console.log(board.getBoard());
+        userChoice = question(`${user.getName()}, please enter L(left), R(right), U(up), D(down), E(exit): `);
         switch(userChoice){
             case 'L', 'l':
-                board.left();
+                board.left(user);
                 break;
             case 'R', 'r':
-                board.right();
+                board.right(user);
                 break;
             case 'U', 'u':
-                board.up();
+                board.up(user);
                 break;
             case 'D', 'd':
-                board.down();
+                board.down(user);
                 break;
             case 'E', 'e':
                 wantsToExit = true;
@@ -33,19 +38,21 @@ let play = function(){
         if(wantsToExit){
             break;
         }
+        console.log(`Your score: ${user.getScore()}`);
     }
     
     if(board.checkWinCase()){
-        console.log(board.matrix);
-        console.log('Congrats, you won!')
+        console.log(board.getBoard());
+        console.log(`Congrats ${user.getNmae()}, you won!`)
     }else if(wantsToExit){
-        console.log('Bye!');
+        console.log(`Bye, ${user.getNmae()},!`);
     }
     else{
-        console.log('You lost the game!')
+        console.log(`${user.getNmae()}, lost the game, HAHAHAHAA!`)
     }
 
 }
+
 
 play();
 
